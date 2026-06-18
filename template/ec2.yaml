@@ -72,16 +72,10 @@ Resources:
             </style>
           </head>
           <body>
-            <div class="card">
-              <h1>Examen Final Arquitectura de Computadores</h1>
-              <p>Nombre completo: Yeilis Sandrid Nogoa Rincon</p>
-              <p>Codigo estudiantil: 0192375</p>
-              <p>Modificado por: Yeilis Sandrid Nogoa Rincon</p>
-              <p>Cambio realizado: Actualizacion colaborativa - Parte 4</p>
-            </div>
-            <script>
-              console.log("Pagina desplegada automaticamente con CloudFormation y GitHub Actions");
-            </script>
+             <h1>Examen Final Arquitectura de Computadores</h1>
+             <p><strong>Nombre:</strong> Kevin Perez</p>
+            <p><strong>Codigo:</strong>0192388</p>
+            <p>Modificacion realizada por Kevin Perez como colaborador externo</p>
           </body>
           </html>
           EOF
