@@ -1,0 +1,93 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: >
+  Despliegue de una instancia EC2 Amazon Linux con un Security Group de acceso HTTP,
+  que ejecuta una pagina web mediante UserData - Examen Final Arquitectura de Computadores.
+
+Parameters:
+  InstanceType:
+    Type: String
+    Default: t2.micro
+    Description: Tipo de instancia EC2
+
+Resources:
+
+  WebServerSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Permite trafico HTTP (puerto 80) y SSH (puerto 22)
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+
+  WebServerInstance:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: !Ref InstanceType
+      ImageId: '{{resolve:ssm:/aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-x86_64}}'
+      SecurityGroups:
+        - !Ref WebServerSecurityGroup
+      Tags:
+        - Key: Name
+          Value: ExamenFinal-EC2
+      UserData:
+        Fn::Base64: |
+          #!/bin/bash
+          yum update -y
+          yum install -y httpd
+          systemctl start httpd
+          systemctl enable httpd
+
+          cat << 'EOF' > /var/www/html/index.html
+          <!DOCTYPE html>
+          <html lang="es">
+          <head>
+            <meta charset="UTF-8">
+            <title>Examen Final Arquitectura de Computadores</title>
+            <style>
+              body {
+                font-family: Arial, sans-serif;
+                background: linear-gradient(135deg, #1f4037, #99f2c8);
+                color: #fff;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 100vh;
+                margin: 0;
+              }
+              .card {
+                background: rgba(0,0,0,0.5);
+                padding: 40px 60px;
+                border-radius: 16px;
+                text-align: center;
+                box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+              }
+              h1 { font-size: 26px; margin-bottom: 14px; }
+              p { font-size: 18px; margin: 6px 0; }
+            </style>
+          </head>
+          <body>
+            <div class="card">
+              <h1>Examen Final Arquitectura de Computadores</h1>
+              <p>Nombre completo: Yeilis Sandrid Nogoa Rincon</p>
+              <p>Codigo estudiantil: 0192375</p>
+            </div>
+            <script>
+              console.log("Pagina desplegada automaticamente con CloudFormation y GitHub Actions");
+            </script>
+          </body>
+          </html>
+          EOF
+
+Outputs:
+  WebsiteURL:
+    Description: URL publica de la pagina desplegada
+    Value: !Sub 'http://${WebServerInstance.PublicIp}'
+  InstanceId:
+    Description: ID de la instancia EC2 creada
+    Value: !Ref WebServerInstance
